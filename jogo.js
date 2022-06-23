@@ -1,5 +1,6 @@
 console.log('[DevMrnice] Flappy Bird');
 
+let frames = 0
 
 const som_HIT = new Audio();
 som_HIT.src = './Efeitos/efeitos_hit.wav';
@@ -130,10 +131,30 @@ function criaFlappyBird() {
       //console.log(flappyBird.y);
       flappyBird.y = flappyBird.y + flappyBird.velocidade;
     },
+    movimentos: [
+      {spriteX: 0, spriteY: 0,},//asa pra cima
+      {spriteX: 0, spriteY: 26,},// asa no meio
+      {spriteX: 0, spriteY: 52,},//asa pra baixo
+      {spriteX: 0, spriteY: 26,},// asa no meio
+    ],
+    frameAtual:0,
+    atualizaOframeAtual(){
+      const intervaloDeFrames = 20;
+      const passouOIntervalo = frames % intervaloDeFrames ===0
+    
+      if (passouOIntervalo){ 
+        const baseDoIncremento = 1;
+        const incremento = baseDoIncremento + flappyBird.frameAtual;
+        const baseRepeticao = flappyBird.movimentos.length;
+        flappyBird.frameAtual = incremento % baseRepeticao
+      }
+    },
     desenha() {
+      flappyBird.atualizaOframeAtual();
+      const {spriteX, spriteY} = flappyBird.movimentos[flappyBird.frameAtual];
       contexto.drawImage(
         sprites,
-        flappyBird.spriteX, flappyBird.spriteY, // Sprite X, Sprite Y
+        spriteX, spriteY, // Sprite X, Sprite Y
         flappyBird.largura, flappyBird.altura, // Tamanho do recorte na sprite
         flappyBird.x, flappyBird.y,
         flappyBird.largura, flappyBird.altura,
@@ -219,7 +240,8 @@ Telas.JOGO = {
 function loop() {  
 
     telaAtiva.desenha();
-    telaAtiva.atualiza();    
+    telaAtiva.atualiza(); 
+    frames = frames + 1;   
     requestAnimationFrame(loop);
 }
 
